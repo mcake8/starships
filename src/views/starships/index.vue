@@ -8,14 +8,16 @@
           <starships-table :ships="starshipsData.results" :isLoading="isLoading" />
           <div class="d-flex justify-end mt-4">
             <v-btn
-              color="primary mx-2"
+              color="primary"
+              class="mx-2"
               @click="fetchShips(paginationInfo.prev)"
               :disabled="!paginationInfo.prev"
             >
               <v-icon>keyboard_arrow_left</v-icon>
             </v-btn>
             <v-btn
-              color="primary mx-2"
+              color="primary"
+              class="mx-2"
               @click="fetchShips(paginationInfo.next)"
               :disabled="!paginationInfo.next"
             >
@@ -25,14 +27,15 @@
         </v-container>
       </v-sheet>
     </v-container>
+    <snackbar :snackbar="snackbar" @close="snackbar.vis = false" />
   </section>
 </template>
 
 <script>
-import qs from "qs";
-
+import snackbarMixin from "@/mixins/snackbar";
 export default {
   name: "main-starships",
+  mixins: [snackbarMixin],
   created() {
     this.fetchShips();
   },
@@ -55,7 +58,7 @@ export default {
         });
         this.starshipsData = data;
       } catch (e) {
-        console.log(e);
+        this.snackbarError("во время загрузки произошла ошибка");
       }
       this.isLoading = false;
     }
@@ -64,17 +67,18 @@ export default {
     paginationInfo() {
       return {
         prev: this.starshipsData.previous
-          ? qs.parse(this.starshipsData.previous).page
+          ? this.starshipsData.previous.split("page=")[1]
           : null,
         next: this.starshipsData.next
-          ? qs.parse(this.starshipsData.next).page
+          ? this.starshipsData.next.split("page=")[1]
           : null
       };
     }
   },
   components: {
     starshipsTable: () => import("@/components/starshipsTable.vue"),
-    starshipsSearch: () => import("@/components/starshipsSearch.vue")
+    starshipsSearch: () => import("@/components/starshipsSearch.vue"),
+    snackbar: () => import("@/components/snackbar.vue")
   }
 };
 </script>

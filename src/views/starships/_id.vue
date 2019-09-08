@@ -16,20 +16,32 @@
         </v-container>
       </v-sheet>
     </v-container>
+    <snackbar :snackbar="snackbar" @close="snackbar.vis = false" />
   </section>
 </template>
 
 <script>
+import snackbarMixin from "@/mixins/snackbar";
 export default {
   name: "ship-page",
+  mixins: [snackbarMixin],
   async created() {
-    let { data } = await this.$axios.get(`starships/${this.$route.params.id}`);
-    this.shipData = data;
+    try {
+      let { data } = await this.$axios.get(
+        `starships/${this.$route.params.id}/`
+      );
+      this.shipData = data;
+    } catch (e) {
+      this.snackbarError("во время загрузки произошла ошибка");
+    }
   },
   data() {
     return {
       shipData: {}
     };
+  },
+  components: {
+    snackbar: () => import("@/components/snackbar.vue")
   }
 };
 </script>

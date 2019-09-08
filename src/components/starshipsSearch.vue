@@ -21,7 +21,9 @@ export default {
   },
   methods: {
     handleSearch() {
-      if (this.$route.query.search !== this.searchQuery) {
+      if (!this.searchQuery) {
+        this.$router.push("/");
+      } else if (this.$route.query.search !== this.searchQuery) {
         this.$router.push({
           path: "/",
           query: {
